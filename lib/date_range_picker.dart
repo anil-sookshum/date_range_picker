@@ -114,7 +114,7 @@ class _DatePickerHeader extends StatelessWidget {
       case Orientation.portrait:
         width = _kMonthPickerPortraitWidth;
         height = _kDatePickerHeaderPortraitHeight;
-        padding = const EdgeInsets.symmetric(horizontal: 8.0);
+        padding = const EdgeInsets.all(8.0);
         break;
       case Orientation.landscape:
         height = _kDatePickerLandscapeHeight;
@@ -986,15 +986,20 @@ class _YearPickerState extends State<YearPicker> {
   }
 }
 
-class _DatePickerDialog extends StatefulWidget {
-  const _DatePickerDialog({
+class DatePickerDialog extends StatefulWidget {
+  const DatePickerDialog({
     Key key,
+    @required
     this.initialFirstDate,
+    @required
     this.initialLastDate,
+    @required
     this.firstDate,
+    @required
     this.lastDate,
     this.selectableDayPredicate,
-    this.initialDatePickerMode,
+    this.initialDatePickerMode = DatePickerMode.day,
+    this.borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
   }) : super(key: key);
 
   final DateTime initialFirstDate;
@@ -1003,12 +1008,13 @@ class _DatePickerDialog extends StatefulWidget {
   final DateTime lastDate;
   final SelectableDayPredicate selectableDayPredicate;
   final DatePickerMode initialDatePickerMode;
+  final BorderRadius borderRadius;
 
-  @override
+@override
   _DatePickerDialogState createState() => new _DatePickerDialogState();
 }
 
-class _DatePickerDialogState extends State<_DatePickerDialog> {
+class _DatePickerDialogState extends State<DatePickerDialog> {
   @override
   void initState() {
     super.initState();
@@ -1163,9 +1169,12 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
         ],
       ),
     );
-    final Dialog dialog = new Dialog(child: new OrientationBuilder(
+    final dialog = Dialog(
+        child: ClipRRect(
+            // dialogTheme.shape doesn't has borderRadius information
+            borderRadius: widget.borderRadius,
+            child: new OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
-      assert(orientation != null);
       final Widget header = new _DatePickerHeader(
         selectedFirstDate: _selectedFirstDate,
         selectedLastDate: _selectedLastDate,
@@ -1220,7 +1229,7 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
           );
       }
       return null;
-    }));
+    })));
 
     return new Theme(
       data: theme.copyWith(
@@ -1274,6 +1283,8 @@ Future<List<DateTime>> showDatePicker({
   DatePickerMode initialDatePickerMode = DatePickerMode.day,
   Locale locale,
   TextDirection textDirection,
+  Widget Function(Widget child) builder,
+  BorderRadius borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
 }) async {
   assert(!initialFirstDate.isBefore(firstDate),
       'initialDate must be on or after firstDate');
@@ -1291,13 +1302,14 @@ Future<List<DateTime>> showDatePicker({
   assert(
       initialDatePickerMode != null, 'initialDatePickerMode must not be null');
 
-  Widget child = new _DatePickerDialog(
+  Widget child = new DatePickerDialog(
     initialFirstDate: initialFirstDate,
     initialLastDate: initialLastDate,
     firstDate: firstDate,
     lastDate: lastDate,
     selectableDayPredicate: selectableDayPredicate,
     initialDatePickerMode: initialDatePickerMode,
+    borderRadius: borderRadius,
   );
 
   if (textDirection != null) {
@@ -1317,6 +1329,6 @@ Future<List<DateTime>> showDatePicker({
 
   return await showDialog<List<DateTime>>(
     context: context,
-    builder: (BuildContext context) => child,
+    builder: (BuildContext context) => builder?.call(child) ?? child,
   );
 }

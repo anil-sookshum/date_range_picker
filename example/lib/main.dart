@@ -60,22 +60,16 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(child: MaterialButton(
-          color: Colors.deepOrangeAccent,
-          onPressed: () async {
-            final List<DateTime> picked = await DateRagePicker.showDatePicker(
-                context: context,
-                initialFirstDate: DateTime.now().subtract(const Duration(days: 7)),
-                initialLastDate: DateTime.now(),
-                firstDate: DateTime(2015),
-                lastDate: DateTime.now(),
-            );
-            if (picked != null && picked.length == 2) {
-              print(picked);
-            }
-          },
-          child: new Text("Pick date range")
-      )),
+      body: Center(child: Theme(data: Theme.of(context).copyWith(
+        accentTextTheme: Theme.of(context).accentTextTheme.copyWith(
+            body2: Theme.of(context).accentTextTheme.body2.copyWith(color: Colors.white70)
+        )
+      ), child: DateRagePicker.DatePickerDialog(
+        initialFirstDate: DateTime.now().subtract(const Duration(days: 7)),
+        initialLastDate: DateTime.now(),
+        firstDate: DateTime(2015),
+        lastDate: DateTime.now(),
+      ))),
     );
   }
 }
