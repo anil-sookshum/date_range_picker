@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
         initialLastDate: DateTime.now(),
         firstDate: DateTime(2015),
         lastDate: DateTime.now(),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ))),
     );
   }

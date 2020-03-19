@@ -283,6 +283,7 @@ class DayPicker extends StatelessWidget {
     @required this.firstDate,
     @required this.lastDate,
     @required this.displayedMonth,
+    this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
     this.selectableDayPredicate,
   })  : assert(selectedFirstDate != null),
         assert(currentDate != null),
@@ -318,6 +319,8 @@ class DayPicker extends StatelessWidget {
 
   /// Optional user supplied predicate function to customize selectable days.
   final SelectableDayPredicate selectableDayPredicate;
+
+  final EdgeInsetsGeometry dayPadding;
 
   /// Builds widgets showing abbreviated days of week. The first widget in the
   /// returned list corresponds to the first day of week for the current locale.
@@ -502,7 +505,7 @@ class DayPicker extends StatelessWidget {
               themeData.textTheme.body2.copyWith(color: themeData.accentColor);
         }
 
-        Widget dayWidget = new Container(
+        Widget dayWidget = Padding(padding: dayPadding, child: new Container(
           decoration: decoration,
           child: new Center(
             child: new Semantics(
@@ -522,7 +525,7 @@ class DayPicker extends StatelessWidget {
               ),
             ),
           ),
-        );
+        ));
 
         if (!disabled) {
           dayWidget = new GestureDetector(
@@ -604,6 +607,7 @@ class MonthPicker extends StatefulWidget {
     @required this.firstDate,
     @required this.lastDate,
     this.selectableDayPredicate,
+    this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
   })  : assert(selectedFirstDate != null),
         assert(onChanged != null),
         assert(!firstDate.isAfter(lastDate)),
@@ -630,6 +634,8 @@ class MonthPicker extends StatefulWidget {
 
   /// Optional user supplied predicate function to customize selectable days.
   final SelectableDayPredicate selectableDayPredicate;
+
+  final EdgeInsetsGeometry dayPadding;
 
   @override
   _MonthPickerState createState() => new _MonthPickerState();
@@ -734,6 +740,7 @@ class _MonthPickerState extends State<MonthPicker>
       lastDate: widget.lastDate,
       displayedMonth: month,
       selectableDayPredicate: widget.selectableDayPredicate,
+      dayPadding: widget.dayPadding,
     );
   }
 
@@ -1000,6 +1007,7 @@ class DatePickerDialog extends StatefulWidget {
     this.selectableDayPredicate,
     this.initialDatePickerMode = DatePickerMode.day,
     this.borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
+    this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
   }) : super(key: key);
 
   final DateTime initialFirstDate;
@@ -1009,6 +1017,7 @@ class DatePickerDialog extends StatefulWidget {
   final SelectableDayPredicate selectableDayPredicate;
   final DatePickerMode initialDatePickerMode;
   final BorderRadius borderRadius;
+  final EdgeInsetsGeometry dayPadding;
 
 @override
   _DatePickerDialogState createState() => new _DatePickerDialogState();
@@ -1132,6 +1141,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
           firstDate: widget.firstDate,
           lastDate: widget.lastDate,
           selectableDayPredicate: widget.selectableDayPredicate,
+          dayPadding: widget.dayPadding,
         );
       case DatePickerMode.year:
         return new YearPicker(
