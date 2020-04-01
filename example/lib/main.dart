@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
         firstDate: DateTime(2015),
         lastDate: DateTime.now(),
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        onDay: (date, child) => Stack(
+        onDay: (date, child, _) => Stack(
           alignment: AlignmentDirectional.center,
           overflow: Overflow.visible,
           children: <Widget>[

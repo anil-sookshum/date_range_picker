@@ -297,7 +297,7 @@ class DayPicker extends StatelessWidget {
         //    !selectedLastDate.isBefore(selectedFirstDate)),
         super(key: key);
 
-  final Widget Function(DateTime date, Widget child) onDay;
+  final Widget Function(DateTime date, Widget child, BuildContext context) onDay;
 
   /// The currently selected date.
   ///
@@ -553,7 +553,7 @@ class DayPicker extends StatelessWidget {
           );
         }
 
-        dayWidget = onDay?.call(dayToBuild, dayWidget) ?? dayWidget;
+        dayWidget = onDay?.call(dayToBuild, dayWidget, context) ?? dayWidget;
 
         labels.add(dayWidget);
       }
@@ -623,7 +623,7 @@ class MonthPicker extends StatefulWidget {
         //    !selectedLastDate.isBefore(selectedFirstDate)),
         super(key: key);
 
-  final Widget Function(DateTime date, Widget child) onDay;
+  final Widget Function(DateTime date, Widget child, BuildContext context) onDay;
 
   /// The currently selected date.
   ///
@@ -1030,7 +1030,7 @@ class DatePickerDialog extends StatefulWidget {
   final EdgeInsetsGeometry dayPadding;
 
   /// Allows Customizing the day
-  final Widget Function(DateTime date, Widget child) onDay;
+  final Widget Function(DateTime date, Widget child, BuildContext context) onDay;
 
 @override
   _DatePickerDialogState createState() => new _DatePickerDialogState();
@@ -1309,7 +1309,7 @@ Future<List<DateTime>> showDatePicker({
   TextDirection textDirection,
   Widget Function(Widget child) builder,
   BorderRadius borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
-  Widget Function(DateTime date, Widget child) onDay,
+  Widget Function(DateTime date, Widget child, BuildContext context) onDay,
 }) async {
   assert(!initialFirstDate.isBefore(firstDate),
       'initialDate must be on or after firstDate');
