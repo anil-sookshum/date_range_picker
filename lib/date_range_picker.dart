@@ -274,7 +274,7 @@ class DayPicker extends StatelessWidget {
   /// Creates a day picker.
   ///
   /// Rarely used directly. Instead, typically used as part of a [MonthPicker].
-  DayPicker({
+  const DayPicker({
     Key key,
     @required this.selectedFirstDate,
     this.selectedLastDate,
@@ -285,16 +285,19 @@ class DayPicker extends StatelessWidget {
     @required this.displayedMonth,
     this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
     this.selectableDayPredicate,
+    this.onDay,
   })  : assert(selectedFirstDate != null),
         assert(currentDate != null),
         assert(onChanged != null),
         assert(displayedMonth != null),
-        assert(!firstDate.isAfter(lastDate)),
-        assert(!selectedFirstDate.isBefore(firstDate) &&
-            (selectedLastDate == null || !selectedLastDate.isAfter(lastDate))),
-        assert(selectedLastDate == null ||
-            !selectedLastDate.isBefore(selectedFirstDate)),
+        //assert(!firstDate.isAfter(lastDate)),
+        //assert(!selectedFirstDate.isBefore(firstDate) &&
+        //    (selectedLastDate == null || !selectedLastDate.isAfter(lastDate))),
+        //assert(selectedLastDate == null ||
+        //    !selectedLastDate.isBefore(selectedFirstDate)),
         super(key: key);
+
+  final Widget Function(DateTime date, Widget child) onDay;
 
   /// The currently selected date.
   ///
@@ -550,6 +553,8 @@ class DayPicker extends StatelessWidget {
           );
         }
 
+        dayWidget = onDay?.call(dayToBuild, dayWidget) ?? dayWidget;
+
         labels.add(dayWidget);
       }
     }
@@ -599,7 +604,7 @@ class MonthPicker extends StatefulWidget {
   ///
   /// Rarely used directly. Instead, typically used as part of the dialog shown
   /// by [showDatePicker].
-  MonthPicker({
+  const MonthPicker({
     Key key,
     @required this.selectedFirstDate,
     this.selectedLastDate,
@@ -608,14 +613,17 @@ class MonthPicker extends StatefulWidget {
     @required this.lastDate,
     this.selectableDayPredicate,
     this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
+    this.onDay,
   })  : assert(selectedFirstDate != null),
         assert(onChanged != null),
-        assert(!firstDate.isAfter(lastDate)),
-        assert(!selectedFirstDate.isBefore(firstDate) &&
-            (selectedLastDate == null || !selectedLastDate.isAfter(lastDate))),
-        assert(selectedLastDate == null ||
-            !selectedLastDate.isBefore(selectedFirstDate)),
+        //assert(!firstDate.isAfter(lastDate)),
+        //assert(!selectedFirstDate.isBefore(firstDate) &&
+        //    (selectedLastDate == null || !selectedLastDate.isAfter(lastDate))),
+        //assert(selectedLastDate == null ||
+        //    !selectedLastDate.isBefore(selectedFirstDate)),
         super(key: key);
+
+  final Widget Function(DateTime date, Widget child) onDay;
 
   /// The currently selected date.
   ///
@@ -741,6 +749,7 @@ class _MonthPickerState extends State<MonthPicker>
       displayedMonth: month,
       selectableDayPredicate: widget.selectableDayPredicate,
       dayPadding: widget.dayPadding,
+      onDay: widget.onDay,
     );
   }
 
@@ -1008,6 +1017,7 @@ class DatePickerDialog extends StatefulWidget {
     this.initialDatePickerMode = DatePickerMode.day,
     this.borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
     this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
+    this.onDay,
   }) : super(key: key);
 
   final DateTime initialFirstDate;
@@ -1018,6 +1028,9 @@ class DatePickerDialog extends StatefulWidget {
   final DatePickerMode initialDatePickerMode;
   final BorderRadius borderRadius;
   final EdgeInsetsGeometry dayPadding;
+
+  /// Allows Customizing the day
+  final Widget Function(DateTime date, Widget child) onDay;
 
 @override
   _DatePickerDialogState createState() => new _DatePickerDialogState();
@@ -1142,6 +1155,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
           lastDate: widget.lastDate,
           selectableDayPredicate: widget.selectableDayPredicate,
           dayPadding: widget.dayPadding,
+          onDay: widget.onDay,
         );
       case DatePickerMode.year:
         return new YearPicker(
@@ -1295,6 +1309,7 @@ Future<List<DateTime>> showDatePicker({
   TextDirection textDirection,
   Widget Function(Widget child) builder,
   BorderRadius borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
+  Widget Function(DateTime date, Widget child) onDay,
 }) async {
   assert(!initialFirstDate.isBefore(firstDate),
       'initialDate must be on or after firstDate');
@@ -1320,6 +1335,7 @@ Future<List<DateTime>> showDatePicker({
     selectableDayPredicate: selectableDayPredicate,
     initialDatePickerMode: initialDatePickerMode,
     borderRadius: borderRadius,
+    onDay: onDay,
   );
 
   if (textDirection != null) {

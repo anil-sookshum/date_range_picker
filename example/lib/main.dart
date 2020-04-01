@@ -70,7 +70,25 @@ class _MyHomePageState extends State<MyHomePage> {
         firstDate: DateTime(2015),
         lastDate: DateTime.now(),
         borderRadius: BorderRadius.all(Radius.circular(10)),
-      ))),
+        onDay: (date, child) => Stack(
+          alignment: AlignmentDirectional.center,
+          overflow: Overflow.visible,
+          children: <Widget>[
+            Transform.scale(scale: 1.5, child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.fastOutSlowIn,
+              decoration: BoxDecoration(
+              color: Theme.of(context).accentColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+              ),
+              width: 20,
+              height: 20,
+            )),
+            Container(
+              child: child,
+            ),
+          ]),
+    ))),
     );
   }
 }
