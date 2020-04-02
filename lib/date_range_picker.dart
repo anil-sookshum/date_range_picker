@@ -651,18 +651,19 @@ class MonthPicker extends StatefulWidget {
 
 class _MonthPickerState extends State<MonthPicker>
     with SingleTickerProviderStateMixin {
+  int _monthPage = 0;
+
   @override
   void initState() {
     super.initState();
     // Initially display the pre-selected date.
-    int monthPage;
     if (widget.selectedLastDate == null) {
-      monthPage = _monthDelta(widget.firstDate, widget.selectedFirstDate);
+      _monthPage = _monthDelta(widget.firstDate, widget.selectedFirstDate);
     } else {
-      monthPage = _monthDelta(widget.firstDate, widget.selectedLastDate);
+      _monthPage = _monthDelta(widget.firstDate, widget.selectedLastDate);
     }
-    _dayPickerController = new PageController(initialPage: monthPage);
-    _handleMonthPageChanged(monthPage);
+    _dayPickerController = new PageController(initialPage: _monthPage);
+    _handleMonthPageChanged(_monthPage);
     _updateCurrentDate();
 
     // Setup the fade animation for chevrons
@@ -679,17 +680,22 @@ class _MonthPickerState extends State<MonthPicker>
   void didUpdateWidget(MonthPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.selectedLastDate == null) {
-      final int monthPage =
+      _monthPage =
           _monthDelta(widget.firstDate, widget.selectedFirstDate);
-      _dayPickerController = new PageController(initialPage: monthPage);
-      _handleMonthPageChanged(monthPage);
+      _dayPickerController = new PageController(initialPage: _monthPage);
+      _handleMonthPageChanged(_monthPage);
     } else if (oldWidget.selectedLastDate == null ||
         widget.selectedLastDate != oldWidget.selectedLastDate) {
-      final int monthPage =
+      _monthPage =
           _monthDelta(widget.firstDate, widget.selectedLastDate);
-      _dayPickerController = new PageController(initialPage: monthPage);
-      _handleMonthPageChanged(monthPage);
+      _dayPickerController = new PageController(initialPage: _monthPage);
+      _handleMonthPageChanged(_monthPage);
     }
+  }
+
+  Future<void> gotoToday() async {
+    return await _dayPickerController.animateToPage(
+        _monthPage, duration: _kMonthScrollDuration, curve: Curves.ease);
   }
 
   MaterialLocalizations localizations;
