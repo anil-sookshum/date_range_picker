@@ -286,6 +286,7 @@ class DayPicker extends StatelessWidget {
     this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
     this.selectableDayPredicate,
     this.onDay,
+    this.firstDayOfWeekIndex,
   })  : assert(selectedFirstDate != null),
         assert(currentDate != null),
         assert(onChanged != null),
@@ -325,6 +326,8 @@ class DayPicker extends StatelessWidget {
 
   final EdgeInsetsGeometry dayPadding;
 
+  final int firstDayOfWeekIndex;
+
   /// Builds widgets showing abbreviated days of week. The first widget in the
   /// returned list corresponds to the first day of week for the current locale.
   ///
@@ -346,12 +349,13 @@ class DayPicker extends StatelessWidget {
   List<Widget> _getDayHeaders(
       TextStyle headerStyle, MaterialLocalizations localizations) {
     final List<Widget> result = <Widget>[];
-    for (int i = localizations.firstDayOfWeekIndex; true; i = (i + 1) % 7) {
+    final _firstDayOfWeekIndex = firstDayOfWeekIndex ?? localizations.firstDayOfWeekIndex;
+    for (int i = _firstDayOfWeekIndex; true; i = (i + 1) % 7) {
       final String weekday = localizations.narrowWeekdays[i];
       result.add(new ExcludeSemantics(
         child: new Center(child: new Text(weekday, style: headerStyle)),
       ));
-      if (i == (localizations.firstDayOfWeekIndex - 1) % 7) break;
+      if (i == (_firstDayOfWeekIndex - 1) % 7) break;
     }
     return result;
   }
@@ -424,7 +428,7 @@ class DayPicker extends StatelessWidget {
     // 0-based day of week, with 0 representing Monday.
     final int weekdayFromMonday = new DateTime(year, month).weekday - 1;
     // 0-based day of week, with 0 representing Sunday.
-    final int firstDayOfWeekFromSunday = localizations.firstDayOfWeekIndex;
+    final int firstDayOfWeekFromSunday = firstDayOfWeekIndex ?? localizations.firstDayOfWeekIndex;
     // firstDayOfWeekFromSunday recomputed to be Monday-based
     final int firstDayOfWeekFromMonday = (firstDayOfWeekFromSunday - 1) % 7;
     // Number of days between the first day of week appearing on the calendar,
@@ -614,6 +618,7 @@ class MonthPicker extends StatefulWidget {
     this.selectableDayPredicate,
     this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
     this.onDay,
+    this.firstDayOfWeekIndex,
   })  : assert(selectedFirstDate != null),
         assert(onChanged != null),
         //assert(!firstDate.isAfter(lastDate)),
@@ -624,6 +629,8 @@ class MonthPicker extends StatefulWidget {
         super(key: key);
 
   final Widget Function(DateTime date, Widget child, BuildContext context) onDay;
+
+  final int firstDayOfWeekIndex;
 
   /// The currently selected date.
   ///
@@ -756,6 +763,7 @@ class _MonthPickerState extends State<MonthPicker>
       selectableDayPredicate: widget.selectableDayPredicate,
       dayPadding: widget.dayPadding,
       onDay: widget.onDay,
+      firstDayOfWeekIndex: widget.firstDayOfWeekIndex,
     );
   }
 
@@ -1024,6 +1032,7 @@ class DatePickerDialog extends StatefulWidget {
     this.borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
     this.dayPadding = const EdgeInsets.symmetric(vertical: 2),
     this.onDay,
+    this.firstDayOfWeekIndex,
   }) : super(key: key);
 
   final DateTime initialFirstDate;
@@ -1037,6 +1046,7 @@ class DatePickerDialog extends StatefulWidget {
 
   /// Allows Customizing the day
   final Widget Function(DateTime date, Widget child, BuildContext context) onDay;
+  final int firstDayOfWeekIndex;
 
 @override
   _DatePickerDialogState createState() => new _DatePickerDialogState();
@@ -1162,6 +1172,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
           selectableDayPredicate: widget.selectableDayPredicate,
           dayPadding: widget.dayPadding,
           onDay: widget.onDay,
+          firstDayOfWeekIndex: widget.firstDayOfWeekIndex,
         );
       case DatePickerMode.year:
         return new YearPicker(
@@ -1316,6 +1327,7 @@ Future<List<DateTime>> showDatePicker({
   Widget Function(Widget child) builder,
   BorderRadius borderRadius = const BorderRadius.all(const Radius.circular(2.0)),
   Widget Function(DateTime date, Widget child, BuildContext context) onDay,
+  int firstDayOfWeekIndex,
 }) async {
   assert(!initialFirstDate.isBefore(firstDate),
       'initialDate must be on or after firstDate');
@@ -1342,6 +1354,7 @@ Future<List<DateTime>> showDatePicker({
     initialDatePickerMode: initialDatePickerMode,
     borderRadius: borderRadius,
     onDay: onDay,
+    firstDayOfWeekIndex: firstDayOfWeekIndex,
   );
 
   if (textDirection != null) {
